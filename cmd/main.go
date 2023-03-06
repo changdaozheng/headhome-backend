@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/changdaozheng/gin-backend/routes"
-	"github.com/changdaozheng/gin-backend/database"
+	"github.com/changdaozheng/headhome-backend/routes"
+	"github.com/changdaozheng/headhome-backend/database"
 )
 
 func main(){

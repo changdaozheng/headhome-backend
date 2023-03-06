@@ -1,4 +1,4 @@
-module github.com/changdaozheng/gin-backend
+module github.com/changdaozheng/headhome-backend
 
 go 1.19
 

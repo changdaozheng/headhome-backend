@@ -10,26 +10,26 @@ import (
 	"cloud.google.com/go/firestore"
 )
 
-var Ctx context.Context
+var FBCtx context.Context
 var Client *firestore.Client
 
-var Members *firestore.CollectionRef
 
 func InitDB(){
-	Ctx = context.Background()
+	FBCtx = context.Background()
 	conf := &firebase.Config{ProjectID: "gsc23-12e94"}
 	opt := option.WithCredentialsFile("./database/firebase_config.json")
-	app, err := firebase.NewApp(Ctx, conf ,opt)
+	app, err := firebase.NewApp(FBCtx, conf ,opt)
 	if err != nil {
 	  log.Fatalln(err)
 	}
 	
-	Client, err = app.Firestore(Ctx)
+	Client, err = app.Firestore(FBCtx)
 	if err != nil {
 	  log.Fatalln(err)
 	}
-	
-	Members = Client.Collection("members")
+
+	//Init collections 
+	InitVolunteers()
 }
 
 func CloseDB(){
