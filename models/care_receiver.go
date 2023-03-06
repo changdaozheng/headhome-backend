@@ -1,6 +1,6 @@
 package models
 
-type CareReciever struct {
+type CareReceiver struct {
 	CrId string `firestore:"cr_id,omitempty"`
 	Name string `firestore:"name,omitempty"`
 	Address string `firestore:"address,omitempty"`

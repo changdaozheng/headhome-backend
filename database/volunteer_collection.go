@@ -1,7 +1,6 @@
 package database
 
 import (	
-	"fmt"
 	"google.golang.org/api/iterator"
 	"github.com/gin-gonic/gin"
 	"cloud.google.com/go/firestore"
@@ -79,8 +78,7 @@ func UpdateVolunteer(c *gin.Context, id string) (error){
 }
 
 func DeleteVolunteer(id string) (error) {
-	result, err := volunteerRef.Doc(id).Delete(FBCtx)
-	fmt.Print(result)
+	_, err := volunteerRef.Doc(id).Delete(FBCtx)
 	if err != nil {
 		return err
 	}
