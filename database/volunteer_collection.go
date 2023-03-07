@@ -1,9 +1,12 @@
 package database
 
 import (	
+	"reflect"
+
 	"google.golang.org/api/iterator"
 	"github.com/gin-gonic/gin"
 	"cloud.google.com/go/firestore"
+	
 
 	"github.com/changdaozheng/headhome-backend/models"
 )
@@ -69,9 +72,24 @@ func UpdateVolunteer(c *gin.Context, id string) (error){
 	if err := c.ShouldBindJSON(&volunteer); err != nil {
 		return err
 	}
-	_, err := volunteerRef.Doc(id).Set(FBCtx, volunteer)
-	if err != nil {
 
+	updates := []firestore.Update{}
+    v := reflect.ValueOf(volunteer)
+    for i := 0; i < v.NumField(); i++ {
+        field := v.Type().Field(i)
+        value := v.Field(i)
+        if value.IsZero() {
+            continue
+        }
+        updates = append(updates, firestore.Update{
+            Path:  field.Tag.Get("firestore"),
+            Value: value.Interface(),
+        })
+    }
+
+
+	_, err := volunteerRef.Doc(id).Update(FBCtx, updates)
+	if err != nil {
 		return err
 	}
 	return nil

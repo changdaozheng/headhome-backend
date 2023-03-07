@@ -1,15 +1,15 @@
 package models
 
 type CareReceiver struct {
-	CrId string `firestore:"cr_id,omitempty"`
-	Name string `firestore:"name,omitempty"`
-	Address string `firestore:"address,omitempty"`
-	ContactNum string `firestore:"contact_num,omitempty"`
+	CrId string `firestore:"cr_id"`
+	Name string `firestore:"name"`
+	Address string `firestore:"address"`
+	ContactNum string `firestore:"contact_num"`
 	SafezoneCtr struct {
-		Lat float64 `firestore:"lat,omitempty"`
-		Lng float64 `firestoer:"lng,omitempty"`
+		Lat float64 `firestore:"lat"`
+		Lng float64 `firestoer:"lng"`
 	}
-	SafezoneRadius int64 `firestore:"safezone_radius,omitempty"`
-	CareGiver []Relationship  `firestore:"care_giver,omitempty"` //Relationship is a self-declared struct in care_giver.go
-	ProfilePic string `firestore:"profile_pic,omitempty"`
+	SafezoneRadius int64 `firestore:"safezone_radius"`
+	CareGiver []Relationship  `firestore:"care_giver"` //Relationship is a self-declared struct in care_giver.go
+	ProfilePic string `firestore:"profile_pic"`
 }
