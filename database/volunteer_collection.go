@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"cloud.google.com/go/firestore"
 	
-
 	"github.com/changdaozheng/headhome-backend/models"
 )
 
@@ -31,7 +30,7 @@ func CreateVolunteer(c *gin.Context) (error) {
 	return nil 
 }
 
-func ReadVolunteers() ([]models.Volunteer, error) {
+func ReadAllVolunteers() ([]models.Volunteer, error) {
 	var volunteers []models.Volunteer
 	iter := volunteerRef.Documents(FBCtx)
 	for {

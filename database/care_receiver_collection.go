@@ -29,7 +29,7 @@ func CreateCareReceiver(c *gin.Context) (error){
 	return nil
 }
 
-func ReadCareReceivers() ([]models.CareReceiver, error) {
+func ReadAllCareReceivers() ([]models.CareReceiver, error) {
 	var careReceivers []models.CareReceiver
 	iter := careReceiverRef.Documents(FBCtx)
 	for {

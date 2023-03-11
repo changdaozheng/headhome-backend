@@ -12,4 +12,5 @@ func main(){
 	database.InitDB()
 	routes.InitRoutes(router)
 	router.Run("localhost:8080")
+	defer database.CloseDB()
 }

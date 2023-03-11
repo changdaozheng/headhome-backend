@@ -1,8 +1,8 @@
 package models
 
 type Relationship struct{
-	id string `firestore:"id"`
-	relationship string `firestore:"relationship"`
+	Id string `firestore:"id"`
+	Relationship string `firestore:"relationship"`
 }
 
 type CareGiver struct {

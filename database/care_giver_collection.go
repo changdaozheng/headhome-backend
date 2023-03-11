@@ -12,6 +12,7 @@ import (
 
 var careGiverRef *firestore.CollectionRef
 
+//Initialise in database.go
 func InitCareGiver(){
 	careGiverRef = Client.Collection("care_giver")
 }
@@ -29,7 +30,7 @@ func CreateCareGiver(c *gin.Context) (error){
 	return nil
 }
 
-func ReadCareGivers() ([]models.CareGiver, error) {
+func ReadAllCareGivers() ([]models.CareGiver, error) {
 	var careGivers []models.CareGiver
 	iter := careGiverRef.Documents(FBCtx)
 	for {
@@ -86,7 +87,47 @@ func UpdateCareGiver(c *gin.Context, id string) (error){
     }
 
 
-	_, err := volunteerRef.Doc(id).Update(FBCtx, updates)
+	_, err := careGiverRef.Doc(id).Update(FBCtx, updates)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func NewCareReceiver(c *gin.Context, id string) (error){
+	var newCareReceiver models.Relationship
+	if err := c.ShouldBindJSON(&newCareReceiver); err != nil {
+		return err
+	}
+
+	update := []firestore.Update {
+		{
+			Path:  "care_receiver",
+			Value: firestore.ArrayUnion(newCareReceiver),
+		},
+	}
+
+	_, err := careGiverRef.Doc(id).Update(FBCtx, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func RemoveCareReceiver(c *gin.Context, id string) (error){
+	var careReceiver models.Relationship
+	if err := c.ShouldBindJSON(&careReceiver); err != nil {
+		return err
+	}
+
+	update := []firestore.Update {
+		{
+			Path:  "care_receiver",
+			Value: firestore.ArrayRemove(careReceiver.Id),
+		},
+	}
+
+	_, err := careGiverRef.Doc(id).Update(FBCtx, update)
 	if err != nil {
 		return err
 	}
