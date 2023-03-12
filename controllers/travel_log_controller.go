@@ -21,11 +21,13 @@ func AddTravelLog(c *gin.Context) {
 	data := []byte(reqBod)
 
 	//Create 
-	if err := database.CreateTravelLog(data); err != nil {
+	
+	latestDatetime, err := database.CreateTravelLog(data)
+	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.IndentedJSON(http.StatusAccepted, gin.H{"message":"successful"})
+	c.IndentedJSON(http.StatusAccepted, latestDatetime)
 
 }
 

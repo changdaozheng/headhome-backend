@@ -21,20 +21,40 @@ func InitTravelLog() {
 }
 
 //Create new document
-func CreateTravelLog(data []byte) (error) {
+func CreateTravelLog(data []byte) (string, error) {
 	//Unmarshal data
 	var travelLog models.TravelLog
 	if err := json.Unmarshal(data, &travelLog); err != nil {
-		return err
+		return "", err
 	}
 	
 	//Create document with composite id
 	travelLogId := travelLog.CrId + strconv.Itoa(int(travelLog.Datetime))
 	_, err := travelLogRef.Doc(travelLogId).Set(FBCtx, travelLog)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	
+	//Check last at home 
+	q := travelLogRef.Where("cr_id", "==", travelLog.CrId).Where("status", "==", "home").OrderBy("datetime", firestore.Desc).Limit(1)
+
+	
+	iter := q.Documents(FBCtx)
+	doc, err := iter.Next()
+
+	if err == iterator.Done {
+		return "", errors.New(fmt.Sprintf("%s has no was not at home", travelLog.CrId))
+	} 
+	if err != nil {
+		return "" , err
+	}
+
+	//Return document
+	if err := doc.DataTo(&travelLog); err != nil {
+		return "", err
+	}
+	return strconv.Itoa(int(travelLog.Datetime)), nil
+
 }
 
 //Read all documents
@@ -73,7 +93,7 @@ func ReadTravelLog(id string) ([]models.TravelLog, error) {
 
 	//Iterate through all documents and return as slice
 	var travelLogs []models.TravelLog
-	iter := travelLogRef.Documents(FBCtx)
+	iter := q.Documents(FBCtx)
 	for {
 		//Reading individual documents
 		doc, err := iter.Next()
@@ -104,7 +124,6 @@ func ReadLatestTravelLog(id string) (models.TravelLog, error) {
 	// Read the only document
 	iter := q.Documents(FBCtx)
 	doc, err := iter.Next()
-	print(doc)
 	if err == iterator.Done {
 		return models.TravelLog{}, errors.New(fmt.Sprintf("No SOS Log found for %s", id))
 	} 

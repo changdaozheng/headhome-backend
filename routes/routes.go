@@ -51,5 +51,6 @@ func InitRoutes(router *gin.Engine){
 	//travellog
 	travelLogR := router.Group("/travellog")
 	travelLogR.GET("/:id", controllers.GetLatestTravelLog)
+	travelLogR.GET("/:id/all", controllers.GetTravelLog)
 	travelLogR.POST("/:id", controllers.AddTravelLog)
 }
