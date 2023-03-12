@@ -18,15 +18,16 @@ func AddSOSLog(c *gin.Context) {
       	return 
     }
 
-	//convert io.Reader data type to []byte data type
+	//Convert io.Reader data type to []byte data type
 	bytesData := []byte(reqBod)
 
 	//Create new sos log
-	if err := database.CreateSOSLog(bytesData); err != nil {
+	res, err := database.CreateSOSLog(bytesData); 
+	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.IndentedJSON(http.StatusAccepted, gin.H{"message":"successful"})
+	c.IndentedJSON(http.StatusAccepted, gin.H{"SOSId": res})
 }
 
 //Read all sos logs 
@@ -51,37 +52,79 @@ func GetLatestSOSLog(c *gin.Context) {
 }
 
 //Update sos log
-type AcceptRequestBody struct{
-	VId string `json:"VId"`
-	SOSId string `json:"SOSId"`
-}
-
 func AcceptSOSRequest(c *gin.Context) {
 	//Process request body
-	var req *AcceptRequestBody
+	type requestBody struct{
+		VId string `json:"VId"`
+		AuthID string `json:"AuthID"`
+		SOSId string `json:"SOSId"`
+	}
+
+	var req requestBody
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
-	//Declare data to be updated and convert to []byte
-	data := map[string]interface{}{
-		"volunteer": req.VId,
-		"status": "guided",
-	}
-	bytesData, err := json.Marshal(data)
+	//Retrieve sosLog
+	sosLog, err := database.FindSOSLog(req.SOSId)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 	
-	//Update
-	err = database.UpdateSOSLog(bytesData, req.SOSId)
+	//Retrieve care receiver involved
+	careReceiver, err := database.ReadCareReceiver(sosLog.CrId)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	c.IndentedJSON(http.StatusOK, gin.H{"message":"successful"})
+
+	//Authenticate and verify status
+	if req.AuthID != careReceiver.AuthID {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "authentication failed"})
+		return
+	} else if sosLog.Status != "lost" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "care receiver already receiving help, thank you!"})
+		return
+	} else {
+		//Declare data to be updated and convert to []byte
+		data := map[string]interface{}{
+			"volunteer": req.VId,
+			"status": "guided",
+		}
+		bytesData, err := json.Marshal(data)
+		if err != nil {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		
+		//Update
+		err = database.UpdateSOSLog(bytesData, req.SOSId)
+		if err != nil {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+
+		//Retreive care giver information
+		careGiver, err := database.ReadCareGiver(careReceiver.CareGiver[0].Id)
+		if err != nil {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"error": "no care giver found"})
+		}
+
+		//Send response
+		resMsg := map[string]interface{} {
+			"CrId": careReceiver.CrId,
+			"Name": careReceiver.Name,
+			"Address": careReceiver.Address,
+			"ContactNum": careReceiver.ContactNum,
+			"CgName": careGiver.Name,
+			"CgContactNum": careGiver.ContactNum,
+			"RouteGeom": [][]float64{},
+		}
+		c.IndentedJSON(http.StatusOK, gin.H{"message":resMsg})
+
+	} 
 }
 
 //Update status 

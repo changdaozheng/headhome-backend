@@ -21,20 +21,20 @@ func InitSosLog() {
 }
 
 //Create new document
-func CreateSOSLog(data []byte) (error) {
+func CreateSOSLog(data []byte) (string, error) {
 	//Unmarshal data
 	var sosLog models.SOSLog
 	if err := json.Unmarshal(data, &sosLog); err != nil {
-		return err
+		return "", err
 	}
 
 	//Create document with composite id
 	sosLogId := sosLog.CrId + strconv.Itoa(int(sosLog.Datetime))
 	_, err := sosLogRef.Doc(sosLogId).Set(FBCtx, sosLog)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return sosLogId, nil
 }
 
 //Read all documents
@@ -65,7 +65,7 @@ func ReadAllSOSLogs() ([]models.SOSLog, error) {
 	return sosLogs, nil
 }
 
-//Read latest document from specified care receiver
+//Read latest document from specified care receiver with care receiver's id as input
 func ReadLatestSOSLog(id string) (models.SOSLog, error) {
 	// Firebase query to find latest document
 	q := sosLogRef.Where("cr_id", "==", id)
@@ -76,13 +76,26 @@ func ReadLatestSOSLog(id string) (models.SOSLog, error) {
 	doc, err := iter.Next()
 	print(doc)
 	if err == iterator.Done {
-		return models.SOSLog{}, errors.New(fmt.Sprintf("No SOS Log found for %s", id))
+		return models.SOSLog{}, errors.New(fmt.Sprintf("No SOS Logs found for %s", id))
 	} 
 	if err != nil {
 		return models.SOSLog{}, err
 	}
 
 	//Return document
+	var sosLog models.SOSLog
+	if err := doc.DataTo(&sosLog); err != nil {
+		return models.SOSLog{}, err
+	}
+	return sosLog, nil
+}
+
+func FindSOSLog(SOSId string) (models.SOSLog, error) {
+	doc, err := sosLogRef.Doc(SOSId).Get(FBCtx)
+	if err != nil {
+		return models.SOSLog{}, err
+	}
+
 	var sosLog models.SOSLog
 	if err := doc.DataTo(&sosLog); err != nil {
 		return models.SOSLog{}, err

@@ -12,4 +12,5 @@ type CareReceiver struct {
 	SafezoneRadius int64 `firestore:"safezone_radius"`
 	CareGiver []Relationship  `firestore:"care_giver"` //Relationship is a self-declared struct in care_giver.go
 	ProfilePic string `firestore:"profile_pic"`
+	AuthID string `firestore:"auth_id"`
 }

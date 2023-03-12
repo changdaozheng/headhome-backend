@@ -29,6 +29,7 @@ func InitRoutes(router *gin.Engine){
 	careReceiverR := router.Group("/carereceiver")
 	careReceiverR.GET("", controllers.GetAllCareReceivers)
 	careReceiverR.GET("/:id", controllers.GetCareReceiver)
+	careReceiverR.GET("/contactcg", controllers.ContactCareGiver)
 	//careReceiverR.GET("/route", controllers.PlotRoute)
 	careReceiverR.POST("", controllers.AddCareReceiver)
 	//careReceiverR.POST("/help", controllers.Help)

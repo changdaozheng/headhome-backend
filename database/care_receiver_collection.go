@@ -2,12 +2,14 @@ package database
 
 import (
 	"reflect"
+	"encoding/json"
 
 	"google.golang.org/api/iterator"
 	"github.com/gin-gonic/gin"
 	"cloud.google.com/go/firestore"
 
 	"github.com/changdaozheng/headhome-backend/models"
+	"github.com/changdaozheng/headhome-backend/logic"
 )
 
 var careReceiverRef *firestore.CollectionRef
@@ -16,12 +18,17 @@ func InitCareReceiver(){
 	careReceiverRef = Client.Collection("care_receiver")
 }
 
-func CreateCareReceiver(c *gin.Context) (error){
+func CreateCareReceiver(data []byte) (error){
+	//Unmarshal data
 	var careReceiver models.CareReceiver
-	if err := c.ShouldBindJSON(&careReceiver); err != nil {
+	if err := json.Unmarshal(data, &careReceiver); err != nil {
 		return err
 	}
+	
+	//Generating Auth ID
+	careReceiver.AuthID = logic.RandStr(10)
 
+	//Create care receiver
 	_, err := careReceiverRef.Doc(careReceiver.CrId).Set(FBCtx, careReceiver)
 	if err != nil {
 		return err
