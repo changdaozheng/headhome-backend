@@ -22,12 +22,12 @@ func AddTravelLog(c *gin.Context) {
 
 	//Create 
 	
-	latestDatetime, err := database.CreateTravelLog(data)
+	lastHome, err := database.CreateTravelLog(data)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.IndentedJSON(http.StatusAccepted, latestDatetime)
+	c.IndentedJSON(http.StatusAccepted, gin.H{"LastHome": lastHome})
 
 }
 
