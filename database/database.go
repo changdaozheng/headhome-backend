@@ -30,6 +30,10 @@ func InitDB(){
 
 	//Init collections 
 	InitVolunteers()
+	InitCareGiver()
+	InitCareReceiver()
+	InitSosLog()
+	InitTravelLog()
 }
 
 func CloseDB(){

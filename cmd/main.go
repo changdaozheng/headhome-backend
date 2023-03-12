@@ -10,6 +10,7 @@ import (
 func main(){
 	router := gin.Default()
 	database.InitDB()
-	routes.InitRoutes(router)
+	routes.InitRoutes(router)	
 	router.Run("0.0.0.0:8080")
+  defer database.CloseDB()
 }
