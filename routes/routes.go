@@ -7,6 +7,10 @@ import (
 )
 
 func InitRoutes(router *gin.Engine){
+	//API health 
+	router.HEAD("/", func(c *gin.Context){c.Status(200)})
+	router.GET("/", func(c *gin.Context){c.String(200, "API HEALTHY")})
+	
 	//volunteers
 	volunteerR := router.Group("/volunteers")
 	volunteerR.GET("", controllers.GetAllVolunteers)
