@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"time"
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
@@ -69,19 +70,30 @@ func AcceptSOSRequest(c *gin.Context) {
 	//Retrieve sosLog
 	sosLog, err := database.FindSOSLog(req.SOSId)
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "sos record not found"})
 		return
 	}
 	
 	//Retrieve care receiver involved
 	careReceiver, err := database.ReadCareReceiver(sosLog.CrId)
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "care receiver not found"})
+		return
+	}
+
+	//Retrieve requesting volunteer
+	volunteer, err := database.ReadVolunteer(req.VId)
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "volunteer not found"})
 		return
 	}
 
 	//Authenticate and verify status
-	if req.AuthID != careReceiver.AuthID {
+	currentTime := time.Now().Unix()
+	if volunteer.CertificationStart >= currentTime || volunteer.CertificationEnd <= currentTime {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "volunteer not certified"})
+		return
+	} else if req.AuthID != careReceiver.AuthID {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "authentication failed"})
 		return
 	} else if sosLog.Status != "lost" {
