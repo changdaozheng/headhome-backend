@@ -86,7 +86,7 @@ func ContactCareGiver(c *gin.Context){
 			resMsg := map[string]interface{} {
 				"CgContactNum": careGiver.ContactNum,
 			}
-			c.IndentedJSON(http.StatusOk, resMsg)
+			c.IndentedJSON(http.StatusOK, resMsg)
 			return
 		} 
 	}
