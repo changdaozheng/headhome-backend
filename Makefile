@@ -2,7 +2,8 @@
 run: main
 	./$<
 
-main: ./cmd/main.go go.mod
+main: rm main 
+	./cmd/main.go go.mod
 	go build -o $@ ./cmd/main.go
 
 .PHONY: all
