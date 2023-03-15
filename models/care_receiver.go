@@ -8,8 +8,8 @@ type CareReceiver struct {
 	Notes string `firestore:"notes"`
 	SafezoneCtr struct {
 		Lat float64 `firestore:"lat"`
-		Lng float64 `firestoer:"lng"`
-	}
+		Lng float64 `firestore:"lng"`
+	} `firestore:"safezone_ctr"`
 	SafezoneRadius int64 `firestore:"safezone_radius"`
 	CareGiver []Relationship  `firestore:"care_giver"` //Relationship is a self-declared struct in care_giver.go
 	ProfilePic string `firestore:"profile_pic"`

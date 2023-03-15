@@ -6,6 +6,6 @@ type TravelLog struct {
 	CurrentLocation struct{
 		Lat float64 `json:"Lat" firestore:"lat"`
 		Lng float64 `json:"Lng" firestore:"lng"`
-	}
+	} `json:"CurrentLocation" firestore:"current_location"`
 	Status string `json:"Status" firestore:"status"` //consider declaring enum for this
 }
