@@ -6,7 +6,7 @@ type SOSLog struct {
 	StartLocation struct{
 		Lat float64 `json:"Lat" firestore:"lat"`
 		Lng float64 `json:"Lng" firestore:"lng"`
-	}
+	} `json:"StartLocation" firestore:"start_location"`
 	Status string `json:"Status" firestore:"status"` //consider declaring enum for this
 	Volunteer string `json:"Volunteer" firestore:"volunteer"`
 }
