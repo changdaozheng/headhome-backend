@@ -93,7 +93,7 @@ func UpdateCareReceiver(c *gin.Context, id string) (error){
         })
     }
 	
-	_, err := volunteerRef.Doc(id).Update(FBCtx, updates)
+	_, err := careReceiverRef.Doc(id).Update(FBCtx, updates)
 	if err != nil {
 		return err
 	}
