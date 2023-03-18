@@ -10,6 +10,7 @@ func InitRoutes(router *gin.Engine){
 	//API health 
 	router.HEAD("/", func(c *gin.Context){c.Status(200)})
 	router.GET("/", func(c *gin.Context){c.String(200, "API HEALTHY")})
+
 	
 	//volunteers
 	volunteerR := router.Group("/volunteers")
@@ -28,6 +29,7 @@ func InitRoutes(router *gin.Engine){
 	careGiverR.PUT("/:id/newcr", controllers.NewCareReceiver)
 	careGiverR.PUT("/:id/rmcr", controllers.RemoveCareReceiver)
 	careGiverR.DELETE("/:id", controllers.DeleteCareGiver)
+	
 
 	//carereceiver
 	careReceiverR := router.Group("/carereceiver")
@@ -36,7 +38,7 @@ func InitRoutes(router *gin.Engine){
 	careReceiverR.GET("/contactcg", controllers.ContactCareGiver)
 	careReceiverR.POST("/route", controllers.PlanRoute)
 	careReceiverR.POST("", controllers.AddCareReceiver)
-	//careReceiverR.POST("/help", controllers.Help)
+	careReceiverR.POST("/:id/help", controllers.Help)
 	careReceiverR.PUT("/:id", controllers.UpdateCareReceiver)
 	careReceiverR.DELETE("/:id", controllers.DeleteCareReceiver)
 
