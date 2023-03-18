@@ -30,6 +30,7 @@ func CreateSOSLog(data []byte) (string, error) {
 
 	//Create document with composite id
 	sosLogId := sosLog.CrId + strconv.Itoa(int(sosLog.Datetime))
+	sosLog.SOSId = sosLogId
 	_, err := sosLogRef.Doc(sosLogId).Set(FBCtx, sosLog)
 	if err != nil {
 		return "", err

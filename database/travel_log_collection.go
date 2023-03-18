@@ -30,6 +30,7 @@ func CreateTravelLog(data []byte) (string, error) {
 	
 	//Create document with composite id
 	travelLogId := travelLog.CrId + strconv.Itoa(int(travelLog.Datetime))
+	travelLog.TravelLogId = travelLogId
 	_, err := travelLogRef.Doc(travelLogId).Set(FBCtx, travelLog)
 	if err != nil {
 		return "", err
