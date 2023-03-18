@@ -3,9 +3,9 @@ package database
 import (
 	"reflect"
 	
-	"google.golang.org/api/iterator"
 	"github.com/gin-gonic/gin"
 	"cloud.google.com/go/firestore"
+	"google.golang.org/api/iterator"
 
 	"github.com/changdaozheng/headhome-backend/models"
 )
@@ -17,6 +17,7 @@ func InitCareGiver(){
 	careGiverRef = Client.Collection("care_giver")
 }
 
+//Create new document
 func CreateCareGiver(c *gin.Context) (error){
 	var careGiver models.CareGiver
 	if err := c.ShouldBindJSON(&careGiver); err != nil {
@@ -30,6 +31,7 @@ func CreateCareGiver(c *gin.Context) (error){
 	return nil
 }
 
+//Read all documents
 func ReadAllCareGivers() ([]models.CareGiver, error) {
 	var careGivers []models.CareGiver
 	iter := careGiverRef.Documents(FBCtx)
@@ -52,6 +54,7 @@ func ReadAllCareGivers() ([]models.CareGiver, error) {
 	return careGivers, nil
 }
 
+//Read specific document
 func ReadCareGiver(id string) (models.CareGiver, error) {
 	
 	doc, err := careGiverRef.Doc(id).Get(FBCtx)
@@ -66,11 +69,15 @@ func ReadCareGiver(id string) (models.CareGiver, error) {
 	return careGiver, nil
 }
 
+//Update care giver details (except care giver modifications e.g. add and remove)
 func UpdateCareGiver(c *gin.Context, id string) (error){
 	var careGiver models.CareGiver
 	if err := c.ShouldBindJSON(&careGiver); err != nil {
 		return err
 	}
+
+	//remove care receiver modification during normal update
+	careGiver.CareReceiver = []models.Relationship{}
 
 	updates := []firestore.Update{}
     v := reflect.ValueOf(careGiver)
@@ -86,7 +93,6 @@ func UpdateCareGiver(c *gin.Context, id string) (error){
         })
     }
 
-
 	_, err := careGiverRef.Doc(id).Update(FBCtx, updates)
 	if err != nil {
 		return err
@@ -94,12 +100,9 @@ func UpdateCareGiver(c *gin.Context, id string) (error){
 	return nil
 }
 
-func NewCareReceiver(c *gin.Context, id string) (error){
-	var newCareReceiver models.Relationship
-	if err := c.ShouldBindJSON(&newCareReceiver); err != nil {
-		return err
-	}
+//Add new care receiver to specified care giver
 
+func NewCareReceiver(newCareReceiver models.Relationship, id string) (error){
 	update := []firestore.Update {
 		{
 			Path:  "care_receiver",
@@ -114,26 +117,38 @@ func NewCareReceiver(c *gin.Context, id string) (error){
 	return nil
 }
 
-func RemoveCareReceiver(c *gin.Context, id string) (error){
-	var careReceiver models.Relationship
-	if err := c.ShouldBindJSON(&careReceiver); err != nil {
+//Remove care receiver from specified care giver
+func RemoveCareReceiver(CgId string, CrId string) (error){
+
+	//ArrayRemove not available in go; Using manual update
+
+	careGiver, err := ReadCareGiver(CgId)
+	if err != nil {
 		return err
 	}
 
+	careReceivers := careGiver.CareReceiver
+	for i, cr := range careReceivers {
+		if cr.Id == CrId {
+			careReceivers = append(careReceivers[:i], careReceivers[i+1:]...)
+		}
+	}
+
 	update := []firestore.Update {
-		{
+		firestore.Update{
 			Path:  "care_receiver",
-			Value: firestore.ArrayRemove(careReceiver.Id),
+			Value: careReceivers,
 		},
 	}
 
-	_, err := careGiverRef.Doc(id).Update(FBCtx, update)
-	if err != nil {
+	
+	if _, err := careGiverRef.Doc(CgId).Update(FBCtx, update); err != nil {
 		return err
 	}
 	return nil
 }
 
+//Delete care receiver
 func DeleteCareGiver(id string) (error) {
 	_, err := careGiverRef.Doc(id).Delete(FBCtx)
 	if err != nil {

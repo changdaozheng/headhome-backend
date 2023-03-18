@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"encoding/json"
 
-	"google.golang.org/api/iterator"
 	"cloud.google.com/go/firestore"
+	"google.golang.org/api/iterator"
 
 	"github.com/changdaozheng/headhome-backend/models"
 )

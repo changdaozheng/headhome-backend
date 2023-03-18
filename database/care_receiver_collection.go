@@ -4,12 +4,12 @@ import (
 	"reflect"
 	"encoding/json"
 
-	"google.golang.org/api/iterator"
 	"github.com/gin-gonic/gin"
 	"cloud.google.com/go/firestore"
+	"google.golang.org/api/iterator"
 
-	"github.com/changdaozheng/headhome-backend/models"
 	"github.com/changdaozheng/headhome-backend/logic"
+	"github.com/changdaozheng/headhome-backend/models"
 )
 
 var careReceiverRef *firestore.CollectionRef
@@ -72,11 +72,15 @@ func ReadCareReceiver(id string) (models.CareReceiver, error) {
 	return careReceiver, nil
 }
 
+//Update care receiver details (except care giver modifications e.g. add and remove)
 func UpdateCareReceiver(c *gin.Context, id string) (error){
 	var careReceiver models.CareReceiver
 	if err := c.ShouldBindJSON(&careReceiver); err != nil {
 		return err
 	}
+
+	//remove care giver modification during normal update
+	careReceiver.CareGiver = []models.Relationship{}
 
 
 	updates := []firestore.Update{}
@@ -100,6 +104,23 @@ func UpdateCareReceiver(c *gin.Context, id string) (error){
 	return nil
 }
 
+//Alter care giver (only allow 1 care giver per care receier)
+func ChangeCareGiver(newCg []models.Relationship, id string) (error) {
+	update := []firestore.Update{
+		{
+			Path: "care_giver",
+			Value: newCg,
+		},
+	}
+
+	if _, err := careReceiverRef.Doc(id).Update(FBCtx, update); err != nil {
+		return err
+	}
+	return nil
+
+}
+
+//Delete care receiver
 func DeleteCareReceiver(id string) (error) {
 	_, err := careReceiverRef.Doc(id).Delete(FBCtx)
 	if err != nil {

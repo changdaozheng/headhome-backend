@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"encoding/json"
 
-	"google.golang.org/api/iterator"
 	"cloud.google.com/go/firestore"
+	"google.golang.org/api/iterator"
 
 	"github.com/changdaozheng/headhome-backend/models"
 )
@@ -91,6 +91,7 @@ func ReadLatestSOSLog(id string) (models.SOSLog, error) {
 	return sosLog, nil
 }
 
+//Read all document from specified care receiver with care receiver's id as input
 func FindSOSLog(SOSId string) (models.SOSLog, error) {
 	doc, err := sosLogRef.Doc(SOSId).Get(FBCtx)
 	if err != nil {
