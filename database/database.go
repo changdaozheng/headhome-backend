@@ -25,11 +25,11 @@ func InitDB(){
 	}
 
 	FBCtx = context.Background()
-	conf := &firebase.Config{ProjectID: "gsc23-12e94"}	
-	opt := option.WithCredentialsJSON([]byte(os.Getenv("FIREBASE_CONFIG")))
+	conf := &firebase.Config{ProjectID: "gsc23-12e94"}
+	opt := option.WithCredentialsJSON([]byte(os.Getenv("FIREBASE_ADMIN_PRIVATE_KEY")))
 	app, err := firebase.NewApp(FBCtx, conf ,opt)
 	if err != nil {
-	  log.Fatalln(err)
+	  	log.Fatalln(err)
 	}
 	
 	Client, err = app.Firestore(FBCtx)

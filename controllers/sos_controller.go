@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"time"
 	"net/http"
 	"io/ioutil"
@@ -8,6 +9,7 @@ import (
 	
 	"github.com/gin-gonic/gin"
 
+	"github.com/changdaozheng/headhome-backend/logic"
 	"github.com/changdaozheng/headhome-backend/database"
 )
 
@@ -112,7 +114,7 @@ func AcceptSOSRequest(c *gin.Context) {
 			return
 		}
 		
-		//Update
+		//Update SOS Log 
 		err = database.UpdateSOSLog(bytesData, req.SOSId)
 		if err != nil {
 			c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
@@ -125,6 +127,13 @@ func AcceptSOSRequest(c *gin.Context) {
 			c.IndentedJSON(http.StatusNotFound, gin.H{"error": "no care giver found"})
 		}
 
+		//Retreive route geometry 
+		directions, err := logic.RetrieveDirections(fmt.Sprintf("%f,%f", sosLog.StartLocation.Lat, sosLog.StartLocation.Lng), careGiver.Address)
+		if err != nil {
+			c.IndentedJSON(http.StatusBadRequest, err.Error())
+			return
+		}
+
 		//Send response
 		resMsg := map[string]interface{} {
 			"CrId": careReceiver.CrId,
@@ -133,7 +142,7 @@ func AcceptSOSRequest(c *gin.Context) {
 			"ContactNum": careReceiver.ContactNum,
 			"CgName": careGiver.Name,
 			"CgContactNum": careGiver.ContactNum,
-			"RouteGeom": [][]float64{},
+			"RouteGeom": directions.OverallPolyline,
 		}
 		c.IndentedJSON(http.StatusOK, gin.H{"message":resMsg})
 
