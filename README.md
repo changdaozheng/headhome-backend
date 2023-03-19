@@ -37,7 +37,7 @@ MAPS_API_KEY=<your maps api key>
 ```
 
 ### Scripts
-Run `go run ./cmd` to launch the server.
+Run `go run ./cmd` to launch the server at `0.0.0.0:8080`.
 
 ### File structure
 ```tree
