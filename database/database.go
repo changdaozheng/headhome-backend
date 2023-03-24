@@ -15,7 +15,7 @@ var Client *firestore.Client
 
 func InitDB(){
 	var err error
-	FBCtx := context.Background()
+	FBCtx = context.Background()
 	Client, err = firebase_app.App.Firestore(FBCtx)
 	if err != nil {
 	  log.Fatalln(err)
