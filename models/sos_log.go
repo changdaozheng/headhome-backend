@@ -9,6 +9,7 @@ type SOSLog struct {
 		Lng float64 `json:"Lng" firestore:"lng"`
 	} `json:"StartLocation" firestore:"start_location"`
 	Status 				string 	`json:"Status" firestore:"status"`
+	VId 				string 	`json:"VId" firestore:"v_id"`
 	Volunteer 			string 	`json:"Volunteer" firestore:"volunteer"`
 	VolunteerContactNum	string 	`json:"VolunteerContactNum" firestore:"volunteer_contact_num"`
 }

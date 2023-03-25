@@ -105,7 +105,8 @@ func AcceptSOSRequest(c *gin.Context) {
 	} else {
 		//Declare data to be updated and convert to []byte
 		data := map[string]interface{}{
-			"Volunteer": req.VId,
+			"VId": req.VId,
+			"Volunteer": volunteer.Name,
 			"VolunteerContactNum": volunteer.ContactNum,
 			"Status": "guided",
 		}
