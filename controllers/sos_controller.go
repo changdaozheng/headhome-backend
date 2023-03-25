@@ -100,13 +100,14 @@ func AcceptSOSRequest(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "authentication failed"})
 		return
 	} else if sosLog.Status != "lost" {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "care receiver already receiving help, thank you!"})
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "care receiver have already received help, thank you!"})
 		return
 	} else {
 		//Declare data to be updated and convert to []byte
 		data := map[string]interface{}{
-			"volunteer": req.VId,
-			"status": "guided",
+			"Volunteer": req.VId,
+			"VolunteerContactNum": volunteer.ContactNum,
+			"Status": "guided",
 		}
 		bytesData, err := json.Marshal(data)
 		if err != nil {
