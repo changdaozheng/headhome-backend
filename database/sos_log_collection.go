@@ -75,7 +75,6 @@ func ReadLatestSOSLog(id string) (models.SOSLog, error) {
 	// Read the only document
 	iter := q.Documents(FBCtx)
 	doc, err := iter.Next()
-	print(doc)
 	if err == iterator.Done {
 		return models.SOSLog{}, errors.New(fmt.Sprintf("No SOS Logs found for %s", id))
 	} 

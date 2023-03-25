@@ -126,7 +126,6 @@ func RetrieveDirections(start string, end string) (DirectionsResult, error){
     a. steps = res['routes'][0]['legs'][0]['steps']
     b. polyline = res['routes'][0]['overview_polyline']
     */
-    fmt.Print(jsonData)
     routes := jsonData["routes"].([]interface{})
     firstRoute :=routes[0].(map[string]interface{})
 
