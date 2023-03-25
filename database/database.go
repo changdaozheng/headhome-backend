@@ -13,7 +13,7 @@ import (
 var FBCtx context.Context
 var Client *firestore.Client
 
-func InitDB(){
+func init(){
 	var err error
 	FBCtx = context.Background()
 	Client, err = firebase_app.App.Firestore(FBCtx)
