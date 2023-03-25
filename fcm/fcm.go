@@ -2,6 +2,7 @@ package fcm
 
 import (
 	"log"
+	"strings"
 	"context"
 
     "firebase.google.com/go/messaging"
@@ -23,6 +24,12 @@ func init(){
 }
 
 func TopicSend(body map[string]string, topic string) (error){
+
+	domainStartIndex := strings.Index(topic, "@")
+	if (domainStartIndex > -1){
+		topic = topic[:domainStartIndex]
+	}
+
 	message := &messaging.Message{
         Data: body, 
         Topic: topic,

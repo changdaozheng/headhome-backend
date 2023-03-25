@@ -40,7 +40,7 @@ func Help(c *gin.Context) {
 	}
 
 	//send help message
-	// convert values to map[string]string
+	//convert values to map[string]string
 	strMap := make(map[string]string)
 
 	for key, value := range req {
@@ -52,14 +52,14 @@ func Help(c *gin.Context) {
 		}
 	}
 
-	if err := fcm.TopicSend(strMap, CrId); err != nil {
+	//Call handler function
+	result, err := logic.RetrieveDirections(req["Start"].(string), req["End"].(string))
+	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	//Call handler function
-	result, err := logic.RetrieveDirections(req["Start"].(string), req["End"].(string))
-	if err != nil {
+	if err := fcm.TopicSend(strMap, CrId); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, err.Error())
 		return
 	}
