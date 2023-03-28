@@ -1,6 +1,7 @@
 package fcm
 
 import (
+	"fmt"
 	"log"
 	"strings"
 	"context"
@@ -29,12 +30,16 @@ func TopicSend(body map[string]string, topic string) (error){
 	if (domainStartIndex > -1){
 		topic = topic[:domainStartIndex]
 	}
-
+	fmt.Println("Before")
 	message := &messaging.Message{
-        Data: body, 
+		Notification: &messaging.Notification{
+            Title: "HeadHome",
+            Body: fmt.Sprintf("%s requires your assistance!", topic),
+        },
         Topic: topic,
 	}
-
+	fmt.Println("After")
+	  
 	// Send a message to the devices subscribed to the provided topic.
 	_, err := FCMClient.Send(FCMContext, message)
 	if err != nil {
