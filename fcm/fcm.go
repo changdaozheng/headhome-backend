@@ -30,7 +30,6 @@ func TopicSend(body map[string]string, topic string) (error){
 	if (domainStartIndex > -1){
 		topic = topic[:domainStartIndex]
 	}
-	fmt.Println("Before")
 	message := &messaging.Message{
 		Notification: &messaging.Notification{
             Title: "HeadHome",
@@ -38,7 +37,6 @@ func TopicSend(body map[string]string, topic string) (error){
         },
         Topic: topic,
 	}
-	fmt.Println("After")
 	  
 	// Send a message to the devices subscribed to the provided topic.
 	_, err := FCMClient.Send(FCMContext, message)
