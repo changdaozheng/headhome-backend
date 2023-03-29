@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	"log"
 	"context"
 	
@@ -30,6 +29,5 @@ func init(){
 }
 
 func CloseDB(){
-	fmt.Print(Client)
 	Client.Close()
 }

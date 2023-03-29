@@ -44,7 +44,6 @@ func (hub *WSHub) Start() {
                 //implement selective sending logic
                 if client.CrId == message["CrId"]{
                     if err := client.Conn.WriteJSON(message); err != nil {
-                        fmt.Println(err)
                         return
                     }
                     fmt.Printf("WS: Sent message to %s\n", client.CrId)

@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	"reflect"
 	
 	"github.com/gin-gonic/gin"
@@ -58,7 +57,6 @@ func ReadAllCareGivers() ([]models.CareGiver, error) {
 //Read specific document
 func ReadCareGiver(id string) (models.CareGiver, error) {
 	
-	fmt.Println(FBCtx)
 	doc, err := careGiverRef.Doc(id).Get(FBCtx)
 	if err != nil {
 		return models.CareGiver{}, err

@@ -44,7 +44,7 @@ func CreateTravelLog(data []byte) (string, error) {
 	doc, err := iter.Next()
 
 	if err == iterator.Done {
-		return "", errors.New(fmt.Sprintf("%s has no was not at home", travelLog.CrId))
+		return fmt.Sprintf("%s have not been home", travelLog.CrId), nil
 	} 
 	if err != nil {
 		return "" , err
