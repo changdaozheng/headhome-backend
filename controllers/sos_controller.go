@@ -10,20 +10,34 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/changdaozheng/headhome-backend/logic"
+	"github.com/changdaozheng/headhome-backend/models"
 	"github.com/changdaozheng/headhome-backend/database"
 )
 
 //Add new sos log
 func AddSOSLog(c *gin.Context) {
-	//Extract request body 
-	reqBod, err := ioutil.ReadAll(c.Request.Body)
-    if err != nil {
+	
+	//1. Get previous sos log
+	var sosLog models.SOSLog
+	if err := c.ShouldBindJSON(&sosLog); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
       	return 
-    }
+	}
 
-	//Convert io.Reader data type to []byte data type
-	bytesData := []byte(reqBod)
+	//ignore if there are no previous logs or update failures
+	lastestSOSLog, err := database.ReadLatestSOSLog(sosLog.CrId)
+	if err != nil {
+	} 
+	fmt.Println("Step 1 end")
+	
+	//2. Create incoming request
+	//Convert to []byte data type
+	jsonData, err := json.Marshal(sosLog)
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+	bytesData := []byte(jsonData)
 
 	//Create new sos log
 	res, err := database.CreateSOSLog(bytesData); 
@@ -31,6 +45,23 @@ func AddSOSLog(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	fmt.Println("Step 2 end")
+	//3. Update old sos log (from 1.) when new one has been created avoid having multiple active logs 
+	
+	homeMap := map[string] string {
+		"Status": "home",
+	}
+
+	homeJson, err := json.Marshal(homeMap)
+	if err != nil {
+	}
+
+	homeBytes := []byte(homeJson)
+
+	if err := database.UpdateSOSLog(homeBytes, lastestSOSLog.SOSId); err != nil {
+	}
+
 	c.IndentedJSON(http.StatusAccepted, gin.H{"SOSId": res})
 }
 
@@ -153,6 +184,7 @@ func AcceptSOSRequest(c *gin.Context) {
 
 //Update status 
 func UpdateSOSStatus(c *gin.Context){
+
 	//Extract information for request body
 	id := c.Param("id")
 	reqBod, err := ioutil.ReadAll(c.Request.Body)
@@ -161,10 +193,14 @@ func UpdateSOSStatus(c *gin.Context){
       	return 
     }
 
+	lastestSOSLog, err := database.ReadLatestSOSLog(id)
+	if err != nil {
+		return 
+	}
+
 	//convert io.Reader data type to []byte data type
 	bytesData := []byte(reqBod)
-	err = database.UpdateSOSLog(bytesData, id) 
-	if err != nil {
+	if err = database.UpdateSOSLog(bytesData, lastestSOSLog.SOSId); err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}

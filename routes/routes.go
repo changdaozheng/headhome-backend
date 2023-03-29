@@ -46,9 +46,9 @@ func InitRoutes(router *gin.Engine){
 	sosR := router.Group("/sos")
 	sosR.GET("", controllers.GetAllSOSLogs)
 	sosR.GET("/:id", controllers.GetLatestSOSLog)
-	sosR.POST("", controllers.AddSOSLog)
+	sosR.POST("/", controllers.AddSOSLog)
 	sosR.PUT("/accept", controllers.AcceptSOSRequest)
-	sosR.PUT("/:id", controllers.UpdateSOSStatus)
+	sosR.PUT("/:id", controllers.UpdateSOSStatus) //TODO: 
 
 	//travellog
 	travelLogR := router.Group("/travellog")
